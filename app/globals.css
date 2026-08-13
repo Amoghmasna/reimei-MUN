@@ -1,5 +1,0 @@
-﻿@tailwind base;
-@tailwind components;
-@tailwind utilities;
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#081A3A;color:#F5F2E8;font-family:Inter,Arial,sans-serif}::selection{background:#D4AF37;color:#081A3A}@layer components{.container-page{@apply mx-auto w-full max-w-7xl px-5 sm:px-8}.glass{@apply border border-white/10 bg-white/[.045] backdrop-blur-xl}.btn-primary{@apply inline-flex items-center justify-center gap-2 border border-gold bg-gold px-6 py-3 text-xs font-bold uppercase tracking-[.14em] text-navy transition hover:bg-transparent hover:text-gold}.btn-ghost{@apply inline-flex items-center justify-center gap-2 border border-gold/60 px-6 py-3 text-xs font-bold uppercase tracking-[.14em] text-gold transition hover:border-gold hover:bg-gold hover:text-navy}.field{@apply mt-2 w-full border border-white/15 bg-white/5 px-4 py-3 text-sm text-ivory outline-none transition focus:border-gold}.label{@apply text-xs font-semibold uppercase tracking-[.14em] text-ivory/70}}
-
