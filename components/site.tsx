@@ -1,0 +1,80 @@
+'use client';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Menu, X } from 'lucide-react';
+import { useState } from 'react';
+
+export function Header() {
+  const [open, setOpen] = useState(false);
+  const links: [string, string][] = [
+    ['Home', '/'],
+    ['Committees', '/committees'],
+    ['Apply', '/apply'],
+    ['Contact', '/#contact']
+  ];
+
+  return (
+    <header className="absolute z-20 w-full border-b border-white/10">
+      <nav className="container-page flex h-20 items-center justify-between">
+        <Link href="/" className="flex items-center gap-3 font-display tracking-[.18em] text-gold">
+          <Image
+            src="/reimei-crest.jpg"
+            alt="Reimei MUN crest"
+            width={35}
+            height={44}
+            className="h-10 w-8 object-cover object-center"
+          />
+          REIMEI MUN
+        </Link>
+        <div className="hidden items-center gap-6 md:flex">
+          {links.map(([name, href]) => (
+            <Link key={name} href={href} className="text-xs uppercase tracking-widest text-ivory/75 hover:text-gold">
+              {name}
+            </Link>
+          ))}
+          <Link href="/apply" className="btn-primary !px-4 !py-2">
+            Apply now
+          </Link>
+        </div>
+        <button className="md:hidden text-ivory" onClick={() => setOpen(!open)} aria-label="Toggle Menu">
+          {open ? <X /> : <Menu />}
+        </button>
+      </nav>
+      {open && (
+        <div className="glass px-5 pb-4 md:hidden">
+          {links.map(([name, href]) => (
+            <Link key={name} href={href} onClick={() => setOpen(false)} className="block border-b border-white/10 py-3 text-ivory">
+              {name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </header>
+  );
+}
+
+export function Footer() {
+  return (
+    <footer className="border-t border-white/10 py-10">
+      <div className="container-page flex flex-col justify-between gap-4 text-sm text-ivory/55 sm:flex-row">
+        <span className="font-display tracking-[.15em] text-gold">REIMEI MUN</span>
+        <span>
+          &copy; {new Date().getFullYear()} Reimei MUN &bull;{' '}
+          <Link className="hover:text-gold" href="/admin/login">
+            Admin
+          </Link>
+        </span>
+      </div>
+    </footer>
+  );
+}
+
+export function Title({ eyebrow, title, copy }: { eyebrow: string; title: string; copy?: string }) {
+  return (
+    <div className="max-w-2xl">
+      <p className="mb-4 text-xs font-bold uppercase tracking-[.23em] text-gold">{eyebrow}</p>
+      <h1 className="font-display text-4xl leading-tight sm:text-5xl">{title}</h1>
+      {copy && <p className="mt-5 leading-7 text-ivory/65">{copy}</p>}
+    </div>
+  );
+}
