@@ -15,13 +15,13 @@ html {
 body {
   margin: 0;
   background: 
-    linear-gradient(180deg, rgba(3, 11, 28, 0.75) 0%, rgba(3, 11, 28, 0.85) 100%),
+    linear-gradient(180deg, rgba(2, 7, 18, 0.92) 0%, rgba(2, 7, 18, 0.96) 100%),
     repeating-linear-gradient(
       90deg,
-      #030B1C 0px,
-      #030B1C 160px,
-      #520815 160px,
-      #520815 320px
+      #020712 0px,
+      #020712 160px,
+      #38040C 160px,
+      #38040C 320px
     );
   background-attachment: fixed;
   color: #F5F2E8;
@@ -31,19 +31,19 @@ body {
 
 ::selection {
   background: #D4AF37;
-  color: #030B1C;
+  color: #020712;
 }
 
 .font-display {
   font-family: 'Cinzel', Georgia, serif;
 }
 
-/* Metallic Gold Text Effect from Palette */
+/* Rich 3D Metallic Gold Text Effect */
 .text-gold, h1.font-display, h2.font-display {
-  background: linear-gradient(180deg, #FFE49E 0%, #E6C265 35%, #B88B2A 70%, #7A5810 100%);
+  background: linear-gradient(180deg, #FFF0C2 0%, #E6C265 35%, #B88B2A 70%, #7A5810 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
 }
 
 .gold-divider {
@@ -62,7 +62,7 @@ body {
   transform: translate(-50%, -50%);
   color: #D4AF37;
   font-size: 0.75rem;
-  background: #030B1C;
+  background: #020712;
   padding: 0 0.5rem;
 }
 
@@ -82,12 +82,13 @@ body {
   }
 }
 
+/* Very Dark, Solid Glass Cards */
 .glass {
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  background: rgba(3, 11, 28, 0.75);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(2, 7, 18, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
 }
 
 .btn-primary {
@@ -102,15 +103,15 @@ body {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  color: #030B1C;
+  color: #020712;
   transition: all 200ms ease;
-  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
 }
 
 .btn-primary:hover {
   background: transparent;
-  color: #FFE49E;
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+  color: #FFF0C2;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.7);
 }
 
 .btn-ghost {
@@ -119,26 +120,27 @@ body {
   justify-content: center;
   gap: 0.5rem;
   border: 1px solid rgba(212, 175, 55, 0.6);
+  background: rgba(2, 7, 18, 0.7);
   padding: 0.75rem 1.75rem;
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  color: #FFE49E;
+  color: #FFF0C2;
   transition: all 200ms ease;
 }
 
 .btn-ghost:hover {
   border-color: #D4AF37;
   background: #D4AF37;
-  color: #030B1C;
+  color: #020712;
 }
 
 .field {
   margin-top: 0.5rem;
   width: 100%;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  background-color: rgba(3, 11, 28, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background-color: rgba(2, 7, 18, 0.95);
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   color: #F5F2E8;
@@ -149,7 +151,7 @@ body {
 
 .field:focus {
   border-color: #D4AF37;
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
 }
 
 .label {
@@ -159,3 +161,4 @@ body {
   letter-spacing: 0.14em;
   color: #D4AF37;
 }
+
