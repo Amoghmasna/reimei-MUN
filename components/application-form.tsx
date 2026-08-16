@@ -51,7 +51,6 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
         'EB Experience': rawValues.eb_experience || 'N/A'
       };
 
-      // Direct email dispatch to amoghmasna@gmail.com
       const res = await fetch('https://formsubmit.co/ajax/amoghmasna@gmail.com', {
         method: 'POST',
         headers: {
@@ -61,7 +60,6 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
         body: JSON.stringify(payload)
       });
 
-      // Also attempt backend API if available
       try {
         await fetch('/api/apply', {
           method: 'POST',
@@ -91,9 +89,9 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
         <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gold/20 text-gold text-3xl">
           ✓
         </div>
-        <h2 className="font-display text-3xl text-gold">Application Submitted Successfully!</h2>
-        <p className="mt-4 text-base text-ivory/90 leading-relaxed">
-          Thank you for applying to Reimei MUN! Your application details have been recorded and an email notification with all details has been sent to <strong>amoghmasna@gmail.com</strong>.
+        <h2 className="font-display text-3xl text-gold">Application Received</h2>
+        <p className="mt-4 text-lg text-ivory/90 leading-relaxed font-light">
+          We received your application, thank you.
         </p>
         <button
           onClick={() => {
