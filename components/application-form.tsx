@@ -6,6 +6,12 @@ import { committees, departments } from '@/lib/constants';
 
 type Kind = 'delegates' | 'executive_board' | 'organizing_committee';
 
+const kindLabels: Record<Kind, string> = {
+  delegates: 'Delegate',
+  executive_board: 'Executive Board',
+  organizing_committee: 'Organizing Committee'
+};
+
 export function ApplicationForm({ kind }: { kind: Kind }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -25,34 +31,56 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
       const f = new FormData(form);
       const rawValues = Object.fromEntries(f.entries());
 
-      if (rawValues.age) {
-        rawValues.age = (parseInt(String(rawValues.age), 10) || 0) as any;
-      }
+      const payload = {
+        _subject: `New Reimei MUN ${kindLabels[kind]} Application - ${rawValues.full_name || 'Applicant'}`,
+        _captcha: 'false',
+        'Application Type': kindLabels[kind],
+        'Full Name': rawValues.full_name || 'N/A',
+        Email: rawValues.email || 'N/A',
+        Phone: rawValues.phone || 'N/A',
+        Age: rawValues.age || 'N/A',
+        Institution: rawValues.institution || 'N/A',
+        Grade: rawValues.grade || 'N/A',
+        Committee: rawValues.committee || 'N/A',
+        Position: rawValues.position || 'N/A',
+        Department: rawValues.department || 'N/A',
+        'Preference 1': rawValues.preference_1 || 'N/A',
+        'Preference 2': rawValues.preference_2 || 'N/A',
+        'Preference 3': rawValues.preference_3 || 'N/A',
+        Experience: rawValues.experience || 'N/A',
+        'EB Experience': rawValues.eb_experience || 'N/A'
+      };
 
-      delete rawValues.resume;
-
-      const response = await fetch('/api/apply', {
+      // Direct email dispatch to amoghmasna@gmail.com
+      const res = await fetch('https://formsubmit.co/ajax/amoghmasna@gmail.com', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
         },
-        body: JSON.stringify({
-          kind,
-          ...rawValues
-        })
+        body: JSON.stringify(payload)
       });
 
-      const data = await response.json();
+      // Also attempt backend API if available
+      try {
+        await fetch('/api/apply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kind, ...rawValues })
+        });
+      } catch (backendErr) {
+        console.warn('Backend API notification skipped:', backendErr);
+      }
 
-      if (!response.ok || !data.success) {
-        throw new Error(data?.message || 'Submission failed. Please check your details.');
+      if (!res.ok) {
+        throw new Error('Failed to send application. Please check your internet connection.');
       }
 
       setBusy(false);
       setSuccess(true);
     } catch (err: any) {
       console.error('Submission Error:', err);
-      setMessage(err?.message || 'Failed to submit. Please try again.');
+      setMessage(err?.message || 'Failed to submit application. Please try again.');
       setBusy(false);
     }
   }
