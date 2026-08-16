@@ -1,24 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { committees, departments } from '@/lib/constants';
 
 type Kind = 'delegates' | 'executive_board' | 'organizing_committee';
 
+const kindLabels: Record<Kind, string> = {
+  delegates: 'Delegate',
+  executive_board: 'Executive Board',
+  organizing_committee: 'Organizing Committee'
+};
+
 export function ApplicationForm({ kind }: { kind: Kind }) {
   const [step, setStep] = useState(1);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   const exec = kind === 'executive_board';
   const org = kind === 'organizing_committee';
 
-  async function submit(f: FormData) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setBusy(true);
     setMessage('');
+
+    const form = e.currentTarget;
+    const f = new FormData(form);
     const db = supabase();
     let resume_url: string | undefined;
 
@@ -35,33 +46,68 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
       resume_url = up.data.path;
     }
 
-    const values = Object.fromEntries(f.entries());
-    delete values.resume;
+    const rawValues = Object.fromEntries(f.entries());
+    delete rawValues.resume;
 
-    // Convert age to integer to match SQL schema
-    if (values.age) {
-      values.age = parseInt(String(values.age), 10) as any;
+    const payload: Record<string, unknown> = { ...rawValues };
+
+    if (payload.age) {
+      payload.age = parseInt(String(payload.age), 10) || 0;
     }
 
-    const { error } = await db.from(kind).insert({
-      ...values,
+    // Insert into Supabase
+    const { error: dbError } = await db.from(kind).insert({
+      ...payload,
       ...(resume_url ? { resume_url } : {}),
       status: 'pending'
     });
 
-    if (error) {
-      setMessage(error.message);
+    if (dbError) {
+      console.error('Supabase DB Insert Error:', dbError);
+      setMessage(dbError.message);
       setBusy(false);
       return;
     }
 
-    router.push('/apply?success=1');
+    // Dispatch Email Notification to amoghmasna@gmail.com
+    try {
+      await fetch('https://formsubmit.co/ajax/amoghmasna@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: `New ${kindLabels[kind]} Application - ${payload.full_name || 'Applicant'}`,
+          _captcha: 'false',
+          'Application Type': kindLabels[kind],
+          'Full Name': payload.full_name,
+          Email: payload.email,
+          Phone: payload.phone,
+          Age: payload.age,
+          Institution: payload.institution,
+          Grade: payload.grade || 'N/A',
+          Committee: payload.committee || 'N/A',
+          Position: payload.position || 'N/A',
+          Department: payload.department || 'N/A',
+          'Preference 1': payload.preference_1 || 'N/A',
+          'Preference 2': payload.preference_2 || 'N/A',
+          'Preference 3': payload.preference_3 || 'N/A',
+          Experience: payload.experience || 'N/A',
+          'EB Experience': payload.eb_experience || 'N/A'
+        })
+      });
+    } catch (emailErr) {
+      console.warn('Email notification dispatch warning:', emailErr);
+    }
+
+    setBusy(false);
+    setSuccess(true);
   }
 
   const handleNextStep = (e: React.MouseEvent<HTMLButtonElement>) => {
     const form = e.currentTarget.closest('form');
     if (form) {
-      // Validate step 1 fields before advancing
       const inputs = form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
         '#step-1-fields [required]'
       );
@@ -77,6 +123,27 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
       }
     }
   };
+
+  if (success) {
+    return (
+      <div className="glass mx-auto max-w-2xl p-10 text-center">
+        <h2 className="font-display text-3xl text-gold">Application Submitted!</h2>
+        <p className="mt-4 text-sm text-ivory/80">
+          Thank you for applying to Reimei MUN. Your application details have been recorded and an email notification has been dispatched to <strong>amoghmasna@gmail.com</strong>.
+        </p>
+        <button
+          onClick={() => {
+            setSuccess(false);
+            setStep(1);
+            router.push('/apply');
+          }}
+          className="btn-primary mt-8"
+        >
+          Return to Applications
+        </button>
+      </div>
+    );
+  }
 
   const Input = ({
     name,
@@ -118,7 +185,7 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
   );
 
   return (
-    <form action={submit} className="glass mx-auto max-w-3xl p-6 sm:p-10">
+    <form onSubmit={handleSubmit} className="glass mx-auto max-w-3xl p-6 sm:p-10">
       {kind === 'delegates' && (
         <p className="mb-7 text-xs uppercase tracking-widest text-gold">Step {step} of 2</p>
       )}
@@ -169,8 +236,8 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
             Continue
           </button>
         ) : (
-          <button disabled={busy} className="btn-primary">
-            {busy ? 'Submitting...' : 'Submit application'}
+          <button type="submit" disabled={busy} className="btn-primary">
+            {busy ? 'Submitting Application...' : 'Submit Application'}
           </button>
         )}
         {kind === 'delegates' && step === 2 && (
