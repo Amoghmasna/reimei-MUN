@@ -2,16 +2,9 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
 import { committees, departments } from '@/lib/constants';
 
 type Kind = 'delegates' | 'executive_board' | 'organizing_committee';
-
-const kindLabels: Record<Kind, string> = {
-  delegates: 'Delegate',
-  executive_board: 'Executive Board',
-  organizing_committee: 'Organizing Committee'
-};
 
 export function ApplicationForm({ kind }: { kind: Kind }) {
   const [step, setStep] = useState(1);
@@ -28,81 +21,42 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
     setBusy(true);
     setMessage('');
 
-    const form = e.currentTarget;
-    const f = new FormData(form);
-    const db = supabase();
-    let resume_url: string | undefined;
-
-    const file = f.get('resume') as File | null;
-    if (exec && file && file.size > 0) {
-      const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const path = `${crypto.randomUUID()}-${sanitizedName}`;
-      const up = await db.storage.from('resumes').upload(path, file);
-      if (up.error) {
-        setMessage(up.error.message);
-        setBusy(false);
-        return;
-      }
-      resume_url = up.data.path;
-    }
-
-    const rawValues = Object.fromEntries(f.entries());
-    delete rawValues.resume;
-
-    const payload: Record<string, unknown> = { ...rawValues };
-
-    if (payload.age) {
-      payload.age = parseInt(String(payload.age), 10) || 0;
-    }
-
-    // Insert into Supabase
-    const { error: dbError } = await db.from(kind).insert({
-      ...payload,
-      ...(resume_url ? { resume_url } : {}),
-      status: 'pending'
-    });
-
-    if (dbError) {
-      console.error('Supabase DB Insert Error:', dbError);
-      setMessage(dbError.message);
-      setBusy(false);
-      return;
-    }
-
-    // Dispatch Email Notification to amoghmasna@gmail.com
     try {
-      await fetch('https://formsubmit.co/ajax/amoghmasna@gmail.com', {
+      const form = e.currentTarget;
+      const f = new FormData(form);
+      const rawValues = Object.fromEntries(f.entries());
+
+      // Parse age
+      if (rawValues.age) {
+        rawValues.age = (parseInt(String(rawValues.age), 10) || 0) as any;
+      }
+
+      delete rawValues.resume;
+
+      const response = await fetch('/api/apply', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          _subject: `New ${kindLabels[kind]} Application - ${payload.full_name || 'Applicant'}`,
-          _captcha: 'false',
-          'Application Type': kindLabels[kind],
-          'Full Name': payload.full_name,
-          Email: payload.email,
-          Phone: payload.phone,
-          Age: payload.age,
-          Institution: payload.institution,
-          Grade: payload.grade || 'N/A',
-          Committee: payload.committee || 'N/A',
-          Position: payload.position || 'N/A',
-          Department: payload.department || 'N/A',
-          'Preference 1': payload.preference_1 || 'N/A',
-          'Preference 2': payload.preference_2 || 'N/A',
-          'Preference 3': payload.preference_3 || 'N/A',
-          Experience: payload.experience || 'N/A',
-          'EB Experience': payload.eb_experience || 'N/A'
+          kind,
+          ...rawValues
         })
       });
-    } catch (emailErr) {
-      console.warn('Email notification dispatch warning:', emailErr);
-    }
 
-    setBusy(false);
-    setSuccess(true);
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to submit application. Please try again.');
+      }
+
+      setBusy(false);
+      setSuccess(true);
+    } catch (err: any) {
+      console.error('Submission error:', err);
+      setMessage(err?.message || 'Something went wrong. Please check your inputs and try again.');
+      setBusy(false);
+    }
   }
 
   const handleNextStep = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -127,9 +81,9 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
   if (success) {
     return (
       <div className="glass mx-auto max-w-2xl p-10 text-center">
-        <h2 className="font-display text-3xl text-gold">Application Submitted!</h2>
-        <p className="mt-4 text-sm text-ivory/80">
-          Thank you for applying to Reimei MUN. Your application details have been recorded and an email notification has been dispatched to <strong>amoghmasna@gmail.com</strong>.
+        <h2 className="font-display text-3xl text-gold">Application Submitted Successfully!</h2>
+        <p className="mt-4 text-base text-ivory/90 leading-relaxed">
+          Thank you for applying to Reimei MUN! Your application details have been recorded and an email notification with all details has been sent to <strong>amoghmasna@gmail.com</strong>.
         </p>
         <button
           onClick={() => {
@@ -187,7 +141,7 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
   return (
     <form onSubmit={handleSubmit} className="glass mx-auto max-w-3xl p-6 sm:p-10">
       {kind === 'delegates' && (
-        <p className="mb-7 text-xs uppercase tracking-widest text-gold">Step {step} of 2</p>
+        <p className="mb-7 text-xs uppercase tracking-widest text-gold font-bold">Step {step} of 2</p>
       )}
 
       {/* Step 1 Fields */}
@@ -210,10 +164,6 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
             </label>
             <Select name="committee" label="Committee" options={committees} />
             <Select name="position" label="Position" options={['Chair', 'Vice Chair', 'Rapporteur']} />
-            <label className="label block sm:col-span-2">
-              Resume (PDF/DOCX)
-              <input name="resume" type="file" accept=".pdf,.doc,.docx" required className="field" />
-            </label>
           </>
         )}
         {org && <Select name="department" label="Department" options={departments} />}
@@ -228,7 +178,7 @@ export function ApplicationForm({ kind }: { kind: Kind }) {
         </div>
       )}
 
-      {message && <p className="mt-5 text-sm text-red-300">{message}</p>}
+      {message && <p className="mt-5 text-sm text-red-400 font-semibold">{message}</p>}
 
       <div className="mt-8 flex gap-3">
         {kind === 'delegates' && step === 1 ? (
