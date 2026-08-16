@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,33 +14,148 @@ html {
 
 body {
   margin: 0;
-  background: #081A3A;
+  background: 
+    linear-gradient(180deg, rgba(3, 11, 28, 0.75) 0%, rgba(3, 11, 28, 0.85) 100%),
+    repeating-linear-gradient(
+      90deg,
+      #030B1C 0px,
+      #030B1C 160px,
+      #520815 160px,
+      #520815 320px
+    );
+  background-attachment: fixed;
   color: #F5F2E8;
   font-family: Inter, Arial, sans-serif;
+  min-height: 100vh;
 }
 
 ::selection {
   background: #D4AF37;
-  color: #081A3A;
+  color: #030B1C;
 }
 
-@layer components {
+.font-display {
+  font-family: 'Cinzel', Georgia, serif;
+}
+
+/* Metallic Gold Text Effect from Palette */
+.text-gold, h1.font-display, h2.font-display {
+  background: linear-gradient(180deg, #FFE49E 0%, #E6C265 35%, #B88B2A 70%, #7A5810 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.gold-divider {
+  position: relative;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent 0%, #D4AF37 50%, transparent 100%);
+  margin: 1.5rem 0;
+}
+
+.gold-divider::after {
+  content: '❖';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #D4AF37;
+  font-size: 0.75rem;
+  background: #030B1C;
+  padding: 0 0.5rem;
+}
+
+.container-page {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 80rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+@media (min-width: 640px) {
   .container-page {
-    @apply mx-auto w-full max-w-7xl px-5 sm:px-8;
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
-  .glass {
-    @apply border border-white/10 bg-white/[.045] backdrop-blur-xl;
-  }
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 border border-gold bg-gold px-6 py-3 text-xs font-bold uppercase tracking-[.14em] text-navy transition hover:bg-transparent hover:text-gold;
-  }
-  .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 border border-gold/60 px-6 py-3 text-xs font-bold uppercase tracking-[.14em] text-gold transition hover:border-gold hover:bg-gold hover:text-navy;
-  }
-  .field {
-    @apply mt-2 w-full border border-white/15 bg-white/5 px-4 py-3 text-sm text-ivory outline-none transition focus:border-gold;
-  }
-  .label {
-    @apply text-xs font-semibold uppercase tracking-[.14em] text-ivory/70;
-  }
+}
+
+.glass {
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: rgba(3, 11, 28, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid #D4AF37;
+  background: linear-gradient(180deg, #D4AF37 0%, #AA7C11 100%);
+  padding: 0.75rem 1.75rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #030B1C;
+  transition: all 200ms ease;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-primary:hover {
+  background: transparent;
+  color: #FFE49E;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  padding: 0.75rem 1.75rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #FFE49E;
+  transition: all 200ms ease;
+}
+
+.btn-ghost:hover {
+  border-color: #D4AF37;
+  background: #D4AF37;
+  color: #030B1C;
+}
+
+.field {
+  margin-top: 0.5rem;
+  width: 100%;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  background-color: rgba(3, 11, 28, 0.85);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #F5F2E8;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: all 150ms ease;
+}
+
+.field:focus {
+  border-color: #D4AF37;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #D4AF37;
 }
