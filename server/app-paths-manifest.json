@@ -1,0 +1,11 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/page": "app/page.js",
+  "/apply/executive-board/page": "app/apply/executive-board/page.js",
+  "/apply/delegate/page": "app/apply/delegate/page.js",
+  "/apply/organizing-committee/page": "app/apply/organizing-committee/page.js",
+  "/apply/page": "app/apply/page.js",
+  "/committees/page": "app/committees/page.js"
+}
