@@ -70,12 +70,12 @@ export function Footer() {
   );
 }
 
-export function Title({ eyebrow, title, copy }: { eyebrow: string; title: string; copy?: string }) {
+export function Title({ eyebrow, title, copy, showDivider = true }: { eyebrow: string; title: string; copy?: string; showDivider?: boolean }) {
   return (
     <div className="max-w-3xl">
       <p className="mb-3 text-xs font-bold uppercase tracking-[.28em] text-gold">{eyebrow}</p>
       <h1 className="font-display text-4xl leading-tight sm:text-6xl text-gold drop-shadow-md">{title}</h1>
-      <div className="gold-divider" />
+      {showDivider && <div className="gold-divider" />}
       {copy && <p className="mt-4 text-base leading-7 text-ivory/80 font-light">{copy}</p>}
     </div>
   );
