@@ -59,6 +59,7 @@ export default function Home() {
           <Title
             eyebrow="Our Mission"
             title="Where Global Citizens Find Their Voice"
+            showDivider={false}
             copy="Reimei MUN is a forum for disciplined debate, intellectual curiosity and meaningful cooperation. We bring together tomorrow's diplomats to negotiate the ideas that shape our world."
           />
           <div className="mt-12 grid gap-5 md:grid-cols-3">
